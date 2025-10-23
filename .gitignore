@@ -1,0 +1,41 @@
+# Root .gitignore for the monorepo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node
+node_modules/
+logs/
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Env files (keep secrets out of git)
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+/dist/
+/build/
+/coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# Caches
+.eslintcache
+.cache/
+.turbo/
+.parcel-cache/
+
+# Editors/IDEs
+.vscode/
+.idea/
+*.swp
+*.swo

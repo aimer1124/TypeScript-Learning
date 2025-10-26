@@ -419,4 +419,43 @@ Because the CRA-TS wille use JS files by default, we need to change the `src/ind
 Until here, I have successfully created a React app with TypeScript and added a simple Header component!
 
 
+## Gmail fetch
+
+This part includes a small TypeScript script to read Gmail messages and extract verification codes.
+
+What it does
+- Uses OAuth 2.0 (Desktop/Installed App + loopback redirect) to get an OAuth token
+- Lists recent messages with optional Gmail search query
+- Prints email headers and extracts numeric codes from the body
+
+One‑time setup
+1) In Google Cloud Console, enable Gmail API for your project.
+2) Create an OAuth client of type “Desktop app (Installed)”. The generated JSON must include a redirect_uris entry like ["http://localhost"].
+3) Save it at repository root as google_client_secret.json (already git‑ignored).
+4) Ensure your network allows Node to reach Google. If you use a local proxy (e.g., Clash), set in your shell:
+   - export HTTPS_PROXY=http://127.0.0.1:<http-proxy-port>
+   - export HTTP_PROXY=$HTTPS_PROXY
+   - export NO_PROXY=localhost,127.0.0.1
+
+Run locally
+- First run (interactive auth will open a browser):
+  - npm run gmail:fetch
+- Filter and extract (examples):
+  - GMAIL_QUERY='from:noreply@brandklout.com newer_than:7d' npm run gmail:fetch
+  - CODE_REGEX='Your\s+verification\s+code\s+is[:\s]*([0-9]{8})' npm run gmail:fetch
+
+Security
+- google_client_secret.json and .credentials/gmail-token.json are ignored by git.
+- Do NOT commit secrets. Use GitHub Secrets in CI.
+
+GitHub Actions (CI)
+1) In your repo settings → Secrets and variables → Actions, add these secrets:
+   - GOOGLE_CLIENT_SECRET_JSON: the entire content of google_client_secret.json
+   - GMAIL_TOKENS_JSON: the entire content of .credentials/gmail-token.json (created after the first local auth)
+2) A workflow is provided at .github/workflows/gmail-fetch.yml. It restores credentials from secrets and runs npm run gmail:fetch.
+3) You can adjust the schedule/filters/regex via workflow envs or repository secrets.
+
+Notes
+- If your OAuth consent screen is still in “Testing”, refresh tokens may expire quickly; switch to “In production” for long‑lived refresh tokens.
+- The script prefers text/plain parts; if an email body is HTML‑only, snippet is printed and you can extend the parser if needed.
 

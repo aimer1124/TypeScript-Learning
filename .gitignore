@@ -19,6 +19,8 @@ pnpm-debug.log*
 .env
 .env.local
 .env.*.local
+google_client_secret.json
+.credentials/
 
 # Build outputs
 /dist/

@@ -1,0 +1,47 @@
+name: Gmail Fetch
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 * * * *" # hourly; adjust as needed
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Write credentials (base64)
+        if: ${{ secrets.GOOGLE_CLIENT_SECRET_JSON_B64 != '' && secrets.GMAIL_TOKENS_JSON_B64 != '' }}
+        run: |
+          mkdir -p .credentials
+          echo "$GOOGLE_CLIENT_SECRET_JSON_B64" | base64 -d > google_client_secret.json
+          echo "$GMAIL_TOKENS_JSON_B64" | base64 -d > .credentials/gmail-token.json
+        env:
+          GOOGLE_CLIENT_SECRET_JSON_B64: ${{ secrets.GOOGLE_CLIENT_SECRET_JSON_B64 }}
+          GMAIL_TOKENS_JSON_B64: ${{ secrets.GMAIL_TOKENS_JSON_B64 }}
+
+      - name: Write credentials (raw)
+        if: ${{ secrets.GOOGLE_CLIENT_SECRET_JSON_B64 == '' || secrets.GMAIL_TOKENS_JSON_B64 == '' }}
+        run: |
+          mkdir -p .credentials
+          printf "%s" "$GOOGLE_CLIENT_SECRET_JSON" > google_client_secret.json
+          printf "%s" "$GMAIL_TOKENS_JSON" > .credentials/gmail-token.json
+        env:
+          GOOGLE_CLIENT_SECRET_JSON: ${{ secrets.GOOGLE_CLIENT_SECRET_JSON }}
+          GMAIL_TOKENS_JSON: ${{ secrets.GMAIL_TOKENS_JSON }}
+
+      - name: Fetch and extract verification codes
+        run: npm run gmail:fetch
+        env:
+          # Filter: From noreply@brandklout.com (last 7 days)
+          GMAIL_QUERY: 'from:noreply@brandklout.com newer_than:7d'
+          # Extract: "Your verification code is: 96637840" (8 digits)
+          CODE_REGEX: '([0-9]{8})'

@@ -433,7 +433,7 @@ One‑time setup
 2) Create an OAuth client of type “Desktop app (Installed)”. The generated JSON must include a redirect_uris entry like ["http://localhost"].
 3) Save it at repository root as google_client_secret.json (already git‑ignored).
 4) Ensure your network allows Node to reach Google. If you use a local proxy (e.g., Clash), set in your shell:
-   - export HTTPS_PROXY=http://127.0.0.1:<http-proxy-port>
+   - export HTTPS_PROXY=http://127.0.0.1:http-proxy-port
    - export HTTP_PROXY=$HTTPS_PROXY
    - export NO_PROXY=localhost,127.0.0.1
 

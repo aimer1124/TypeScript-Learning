@@ -441,8 +441,7 @@ Run locally
 - First run (interactive auth will open a browser):
   - npm run gmail:fetch
 - Filter and extract (examples):
-  - GMAIL_QUERY='from:noreply@brandklout.com newer_than:7d' npm run gmail:fetch
-  - CODE_REGEX='Your\s+verification\s+code\s+is[:\s]*\*?\s*([0-9]{8})\*?' npm run gmail:fetch
+  - CODE_REGEX='([0-9]{8})' npm run gmail:fetch
 
 Security
 - google_client_secret.json and .credentials/gmail-token.json are ignored by git.
@@ -452,6 +451,7 @@ GitHub Actions (CI)
 1) In your repo settings → Secrets and variables → Actions, add these secrets:
    - GOOGLE_CLIENT_SECRET_JSON: the entire content of google_client_secret.json
    - GMAIL_TOKENS_JSON: the entire content of .credentials/gmail-token.json (created after the first local auth)
+   - GMAIL_QUERY and CODE_REGEX: the desired Gmail search query and code regex pattern
 2) A workflow is provided at .github/workflows/gmail-fetch.yml. It restores credentials from secrets and runs npm run gmail:fetch.
 3) You can adjust the schedule/filters/regex via workflow envs or repository secrets.
 

@@ -18,18 +18,7 @@ jobs:
       - name: Install deps
         run: npm ci
 
-      - name: Write credentials (base64)
-        if: ${{ secrets.GOOGLE_CLIENT_SECRET_JSON_B64 != '' && secrets.GMAIL_TOKENS_JSON_B64 != '' }}
-        run: |
-          mkdir -p .credentials
-          echo "$GOOGLE_CLIENT_SECRET_JSON_B64" | base64 -d > google_client_secret.json
-          echo "$GMAIL_TOKENS_JSON_B64" | base64 -d > .credentials/gmail-token.json
-        env:
-          GOOGLE_CLIENT_SECRET_JSON_B64: ${{ secrets.GOOGLE_CLIENT_SECRET_JSON_B64 }}
-          GMAIL_TOKENS_JSON_B64: ${{ secrets.GMAIL_TOKENS_JSON_B64 }}
-
-      - name: Write credentials (raw)
-        if: ${{ secrets.GOOGLE_CLIENT_SECRET_JSON_B64 == '' || secrets.GMAIL_TOKENS_JSON_B64 == '' }}
+      - name: Write credentials
         run: |
           mkdir -p .credentials
           printf "%s" "$GOOGLE_CLIENT_SECRET_JSON" > google_client_secret.json
@@ -41,7 +30,5 @@ jobs:
       - name: Fetch and extract verification codes
         run: npm run gmail:fetch
         env:
-          # Filter: From noreply@brandklout.com (last 7 days)
-          GMAIL_QUERY: 'from:noreply@brandklout.com newer_than:7d'
-          # Extract: "Your verification code is: 96637840" (8 digits)
-          CODE_REGEX: '([0-9]{8})'
+          GMAIL_QUERY: ${{ secrets.GMAIL_QUERY }}
+          CODE_REGEX: ${{ secrets.CODE_REGEX }}

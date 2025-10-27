@@ -442,7 +442,7 @@ Run locally
   - npm run gmail:fetch
 - Filter and extract (examples):
   - GMAIL_QUERY='from:noreply@brandklout.com newer_than:7d' npm run gmail:fetch
-  - CODE_REGEX='Your\s+verification\s+code\s+is[:\s]*([0-9]{8})' npm run gmail:fetch
+  - CODE_REGEX='Your\s+verification\s+code\s+is[:\s]*\*?\s*([0-9]{8})\*?' npm run gmail:fetch
 
 Security
 - google_client_secret.json and .credentials/gmail-token.json are ignored by git.
